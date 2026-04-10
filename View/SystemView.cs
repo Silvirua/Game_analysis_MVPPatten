@@ -1,45 +1,87 @@
-using Game_analysis_MVPPattern.Presenter;
+using MVPPattern.Presenter;
 
-namespace Game_analysis_MVPPattern.View{
-  public class SystemView{
-    public event Action<int> OnInputReceived;
+namespace Game_analysis_MVPPattern.View
+{
+    internal class SystemView : IGameView
+    {
+        public event Action<int> OnInputReceived;
+        
+        // 화면에 표시하기 위해 현재 값을 들고 있을 것
+        private int PlayerFreeGems;
+        private int PlayerPayGems;
 
-    private int playerFreegems = 0;
-    private int playerPaygems = 0;
-    private bool isRunning = false;
-    
-    public void StartGameLoop(){
-      isRunning = true;
-      DrawStatus();
+        // 게임의 지속 여부
+        private bool isRunning = false;
 
-      while(isRunning){
-        Console.Write(" 동작을 선택하세요 (1. 1회 뽑기, 2: 10회 뽑기, 3: 종료) : ");
+        // 무료 재화 업데이트
+        public void UpdatePlayerFGems(int fgems) => PlayerFreeGems = fgems;
 
-        string input = Console.ReadLine();
+        // 유료 재화 업데이트
+        public void UpdatePlayerPGems(int pgems) => PlayerPayGems = pgems;
 
-        if(int.TryParse(input, out int actionCode) && actionCode >= 1 && actionCode <= 3){
-          OnInputReceived?.Invoke(actionCode);
-          if(isRunning){
-            DrwaStatus();
-          }
-        }else{
-          Console.WriteLine("잘못된 입력입니다.");
+        // 로그 출력
+        public void PrintLog(string message)
+        {
+            Console.WriteLine(message);
         }
-      }
-    }
 
-    public void ShowGameExit(){
-      DrawStatus();
-      Console.WriteLine( isGameExit ? "\n>>> Game Exit! <<<" : "\n\n");
+        // 게임 루프부분
+        public void StartGameLoop()
+        {
+            isRunning = true;
+            DrawStatus();
+
+            while (isRunning)
+            {
+                Console.Write(" 동작을 선택하세요 (1: 1회 뽑기, 2: 10회 뽑기, 3: 종료) : ");
+
+                string input = Console.ReadLine();
+
+                if(int.TryParse(input, out int actionCode) && actionCode >= 1 && actionCode <= 2)
+                {
+                    OnInputReceived?.Invoke(actionCode);
+                    if (isRunning)
+                    {
+                        DrawStatus();
+                    }
+                }else if(actionCode == 3)
+                {
+                    ShowGameExit();
+                }
+                else
+                {
+                    Console.WriteLine(" 잘못된 입력입니다.");
+                }
+            }
+        }
+
+        // 게임 오버로 게임 종료가 아닌, 게임 종료를 사용자가 직접 사용.
+        public void ShowGameExit()
+        {
+            DrawStatus();
+            Console.Write("\n\n 게임을 종료하시겠습니까? (1: 종료, 1을 제외한 수 :취소) : ");
+            string exit_select = Console.ReadLine();
+            if (int.TryParse(exit_select, out int exitcode) && exitcode == 1)
+            {
+                Console.WriteLine("\n>>> Game Exit! <<<");
+                isRunning = false;
+            }
+            else
+            {
+                Console.WriteLine("\n 계속 진행합니다.");
+            }
+        }
+
+        // 플레이어의 재화 갯수 여부 확인 스테이터스
+        private void DrawStatus()
+        {
+            Console.WriteLine("  =============================================  ");
+            Console.WriteLine($"        [무료 재화 : {PlayerFreeGems}, 유료 재화 : {PlayerPayGems}]");
+            Console.WriteLine("  =============================================  ");
+        }
     }
-    
-    private void DrawStatus(){
-      Console.WriteLine("  ============================================  ");
-      Console.WriteLine($"[무료 재화 : {}, 유료 재화 : {}]");
-      Console.WriteLine("  ============================================  ");
-    }
-  }
 }
+
 
 
 
