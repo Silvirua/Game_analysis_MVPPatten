@@ -1,14 +1,17 @@
-namespace Game_analysis_MVPPattern.Presenter{
-  public interface IGameView{
-    event Action<int> OnInputReceived;
+namespace MVPPattern.Presenter
+{
+    internal interface IGameView
+    {
+        event Action<int> OnInputReceived;
 
-    // Player가 가지고 있는 재화 갱신
-    void UpdatePlayerGems(int gem); 
+        void UpdatePlayerFGems(int fgems);
 
-    // Log 표시
-    void PrintLog(string message);
+        void UpdatePlayerPGems(int pgems);
 
-    // 게임 프로세스
-    void StartGameLoop();
-  }
+        void PrintLog(string message);
+
+        void ShowGameExit();
+
+        void StartGameLoop();
+    }
 }
